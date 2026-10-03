@@ -1,0 +1,7 @@
+{
+  "name": "form-pendaftaran-ansor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Form pendaftaran peserta kaderisasi GP Ansor (Vercel + Supabase)",
+  "engines": { "node": ">=20" }
+}

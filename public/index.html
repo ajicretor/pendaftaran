@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pendaftaran Peserta Kaderisasi — GP Ansor</title>
+<meta name="theme-color" content="#0B6B3A">
+<link rel="icon" href="/favicon.png">
+<style>
+:root{
+  --bg:#F2F6F3;--surface:#fff;--ink:#12241A;--muted:#5E7266;--primary:#0B6B3A;--primary-2:#0E8A4B;--primary-soft:#E6F3EB;
+  --border:#DCE5DF;--danger:#C0392B;--gold:#C9A227;--shadow:0 20px 50px -20px rgba(11,60,35,.35);
+  --field:#FBFDFC;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0A130E;--surface:#111E16;--ink:#E8F1EB;--muted:#9AB2A2;--primary:#2FA568;--primary-2:#3BBF7B;--primary-soft:#173324;
+  --border:#22362A;--danger:#E58A7B;--gold:#E0BE4A;--shadow:0 20px 50px -20px rgba(0,0,0,.7);--field:#0E1912;}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+body.embed{background:transparent}
+body.embed .hero{display:none}
+body.embed .wrap{margin-top:0}
+.hero{background:linear-gradient(135deg,#064E2B 0%,#0B6B3A 55%,#12924F 100%);color:#fff;padding:34px 20px 96px;position:relative;overflow:hidden}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.06)}
+.hero:before{width:380px;height:380px;right:-120px;top:-150px}
+.hero:after{width:240px;height:240px;left:-90px;bottom:-130px}
+.hero-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:18px;position:relative;z-index:1}
+.logo{width:76px;height:auto;flex:none;background:#fff;border-radius:16px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#BFE8D0;margin:0 0 4px}
+.hero h1{margin:0;font-size:clamp(22px,4.6vw,30px);line-height:1.2;letter-spacing:-.01em}
+.hero p{margin:6px 0 0;font-size:14px;color:#D5EFE0}
+.wrap{max-width:760px;margin:-64px auto 40px;padding:0 16px;position:relative;z-index:2}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;box-shadow:var(--shadow)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--primary-soft);border-radius:12px;padding:12px 14px;font-size:13.5px;color:var(--ink);margin-bottom:6px}
+.note svg{flex:none;margin-top:2px;color:var(--primary)}
+.note b.req{color:var(--danger)}
+.sec{display:flex;align-items:center;gap:10px;margin:26px 0 14px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--primary)}
+.sec:after{content:"";flex:1;height:1px;background:var(--border)}
+.sec .n{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:12px;letter-spacing:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+label .req{color:var(--danger)}
+.hint{font-size:12px;color:var(--muted);margin-top:5px}
+input,select,textarea{width:100%;font:inherit;font-size:15px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--field);color:var(--ink);transition:border-color .15s,box-shadow .15s;min-height:46px}
+input::placeholder,textarea::placeholder{color:#9AAAA0}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--primary-2);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary-2) 22%,transparent)}
+input.bad,select.bad,textarea.bad{border-color:var(--danger)}
+input[readonly]{background:var(--primary-soft);font-weight:600;color:var(--primary)}
+textarea{min-height:88px;resize:vertical}
+input[type=date]{appearance:none;-webkit-appearance:none}
+.foto{display:flex;gap:16px;align-items:center;padding:14px;border:1.5px dashed var(--border);border-radius:14px;background:var(--field)}
+.foto .ph,.foto img{width:76px;height:76px;border-radius:50%;object-fit:cover;flex:none;background:var(--primary-soft);display:grid;place-items:center;color:var(--primary);border:3px solid var(--surface);box-shadow:0 0 0 2px var(--border)}
+.foto .info{flex:1;min-width:0}
+.foto input[type=file]{padding:8px;font-size:13px;min-height:0;background:var(--surface)}
+.foto input[type=file]::file-selector-button{font:inherit;font-weight:600;font-size:13px;border:0;background:var(--primary);color:#fff;padding:8px 14px;border-radius:8px;margin-right:10px;cursor:pointer}
+.agree{display:flex;gap:12px;align-items:flex-start;padding:16px;border:1.5px solid var(--border);border-radius:14px;background:var(--field);cursor:pointer;margin-top:24px;transition:border-color .15s,background .15s}
+.agree:has(input:checked){border-color:var(--primary-2);background:var(--primary-soft)}
+.agree.bad{border-color:var(--danger)}
+.agree input{width:22px;height:22px;min-height:0;flex:none;margin:1px 0 0;accent-color:var(--primary);padding:0}
+.agree span{font-size:14px;line-height:1.55}
+button.go{font:inherit;font-weight:700;font-size:16px;padding:15px 18px;border-radius:14px;border:0;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;cursor:pointer;width:100%;margin-top:18px;box-shadow:0 10px 24px -10px var(--primary);transition:transform .1s,opacity .15s}
+button.go:hover{transform:translateY(-1px)}button.go:active{transform:none}
+button.go:disabled{opacity:.6;cursor:wait;transform:none}
+#err{color:var(--danger);font-size:13.5px;font-weight:600;min-height:20px;margin:14px 0 0;text-align:center}
+.ok{text-align:center;padding:26px 6px}
+.ok .tick{width:72px;height:72px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;margin:0 auto 14px}
+.ok h2{margin:0 0 6px;font-size:24px}
+.ok p{margin:0;color:var(--muted);font-size:14.5px}
+.ok .id{display:inline-block;font:700 26px ui-monospace,Consolas,monospace;margin:18px 0 6px;color:var(--primary);background:var(--primary-soft);padding:10px 22px;border-radius:14px;letter-spacing:.04em}
+.foot{text-align:center;font-size:12.5px;color:var(--muted);margin-top:18px}
+.hp{position:absolute;left:-9999px}
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}.card{padding:20px 18px;border-radius:18px}
+  .hero{padding:26px 16px 88px}.logo{width:62px}
+  .foto{flex-direction:column;align-items:flex-start}
+}
+</style></head>
+<body>
+<header class="hero"><div class="hero-in">
+  <img class="logo" src="/logo-gp-ansor.png" alt="Logo GP Ansor">
+  <div>
+    <p class="eyebrow">Gerakan Pemuda Ansor</p>
+    <h1>Pendaftaran Peserta Kaderisasi</h1>
+    <p>Lengkapi formulir di bawah untuk mendaftar sebagai peserta.</p>
+  </div>
+</div></header>
+
+<main class="wrap"><div class="card" id="box">
+  <div class="note">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <div>Isi data dengan benar sesuai KTP. Kolom bertanda <b class="req">*</b> wajib diisi.</div>
+  </div>
+
+  <div class="grid">
+    <div class="full sec"><span class="n">1</span>Data Diri</div>
+
+    <div class="full"><label>Foto <span style="font-weight:400;color:var(--muted)">(opsional, JPG/PNG maks 5 MB)</span></label>
+      <div class="foto">
+        <div class="ph" id="prev"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+        <div class="info"><input type="file" id="foto" accept="image/jpeg,image/png,image/webp"></div>
+      </div></div>
+
+    <div class="full"><label for="nama">Nama lengkap <span class="req">*</span></label><input id="nama" autocomplete="name" placeholder="Sesuai KTP"></div>
+
+    <div class="full"><label for="nik">NIK <span class="req">*</span></label>
+      <input id="nik" inputmode="numeric" maxlength="16" autocomplete="off" placeholder="16 digit Nomor Induk Kependudukan">
+      <div class="hint" id="nikHint">Hanya angka, 16 digit.</div></div>
+
+    <div><label for="jk">Jenis kelamin</label><input id="jk" value="Laki-laki" readonly></div>
+    <div><label for="tempat">Tempat lahir <span class="req">*</span></label><input id="tempat" placeholder="mis. Bogor" autocomplete="off"></div>
+
+    <div class="full"><label for="tgl">Tanggal lahir <span class="req">*</span></label><input id="tgl" type="date" min="1940-01-01"></div>
+
+    <div class="full sec"><span class="n">2</span>Organisasi</div>
+    <div><label for="pac">PAC / Utusan <span class="req">*</span></label><input id="pac" placeholder="mis. PAC Cibungbulang"></div>
+    <div><label for="jabatan">Jabatan di organisasi</label><input id="jabatan" placeholder="mis. Ketua Ranting, Anggota"></div>
+
+    <div class="full sec"><span class="n">3</span>Kontak</div>
+    <div><label for="hp">No. HP / WhatsApp</label><input id="hp" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx"></div>
+    <div><label for="email">Email</label><input id="email" type="email" placeholder="nama@email.com"></div>
+    <div class="full"><label for="alamat">Alamat</label><textarea id="alamat" placeholder="Alamat lengkap tempat tinggal"></textarea></div>
+
+    <div class="full sec"><span class="n">4</span>Latar Belakang</div>
+    <div><label for="pendidikan">Pendidikan terakhir</label><input id="pendidikan" placeholder="mis. S1"></div>
+    <div><label for="pekerjaan">Pekerjaan</label><input id="pekerjaan"></div>
+
+    <input class="hp" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+  </div>
+
+  <label class="agree" id="agreeBox">
+    <input type="checkbox" id="setuju">
+    <span>Saya akan mengikuti seluruh rangkaian kegiatan kaderisasi ini dari awal sampai selesai dengan penuh tanggung jawab.</span>
+  </label>
+
+  <p id="err"></p>
+  <button class="go" id="kirim">Daftar Sekarang</button>
+  <p class="foot">Gerakan Pemuda Ansor · Kaderisasi</p>
+</div></main>
+
+<script>
+if(location.search.includes('embed=1')) document.body.classList.add('embed');
+const $=id=>document.getElementById(id); let fotoData=null;
+$('tgl').max=new Date().toISOString().slice(0,10);
+$('nik').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,16);
+  const n=e.target.value.length; $('nikHint').textContent=n?(n+'/16 digit'):'Hanya angka, 16 digit.';});
+// Foto dikecilkan di HP/browser dulu (maks 900 px, JPEG) supaya cepat terkirim walau sinyal lemah
+function kompres(file){return new Promise((res,rej)=>{
+  const img=new Image(), u=URL.createObjectURL(file);
+  img.onload=()=>{ const s=Math.min(1,900/Math.max(img.width,img.height));
+    const w=Math.round(img.width*s), h=Math.round(img.height*s), c=document.createElement('canvas'); c.width=w; c.height=h;
+    const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,w,h); x.drawImage(img,0,0,w,h);
+    URL.revokeObjectURL(u); res(c.toDataURL('image/jpeg',0.82)); };
+  img.onerror=()=>{URL.revokeObjectURL(u); rej(new Error('Foto tidak bisa dibaca. Pilih file JPG/PNG lain.'));};
+  img.src=u; });}
+$('foto').onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return; $('err').textContent='';
+  try{
+    if(!/^image\/(jpeg|png|webp)$/.test(f.type)) throw new Error('Foto harus JPG, PNG, atau WEBP');
+    if(f.size>5*1024*1024) throw new Error('Ukuran foto maksimal 5 MB');
+    fotoData=await kompres(f); $('prev').outerHTML='<img id="prev" src="'+fotoData+'" alt="Foto">';
+  }catch(x){ $('err').textContent=x.message; e.target.value=''; fotoData=null; }
+};
+function bad(id,msg){ const el=$(id); el.classList.add('bad'); el.focus&&el.focus(); $('err').textContent=msg; return false; }
+$('kirim').onclick=async()=>{
+  const b=$('kirim'); $('err').textContent='';
+  document.querySelectorAll('.bad').forEach(e=>e.classList.remove('bad'));
+  const v=k=>$(k).value.trim();
+  if(!v('nama')) return bad('nama','Nama lengkap wajib diisi');
+  if(!/^\d{16}$/.test(v('nik'))) return bad('nik','NIK harus 16 digit angka');
+  if(!v('tempat')) return bad('tempat','Tempat lahir wajib diisi');
+  if(!v('tgl')) return bad('tgl','Tanggal lahir wajib dipilih');
+  if(!v('pac')) return bad('pac','PAC / Utusan wajib diisi');
+  if(!$('setuju').checked){ $('agreeBox').classList.add('bad'); $('err').textContent='Centang pernyataan kesediaan mengikuti kaderisasi'; return; }
+  const body={foto:fotoData,website:$('website').value,
+    nama:v('nama'),nik:v('nik'),tempatLahir:v('tempat'),tglLahir:v('tgl'),
+    pac:v('pac'),jabatanOrganisasi:v('jabatan'),hp:v('hp'),email:v('email'),alamat:v('alamat'),
+    pendidikan:v('pendidikan'),pekerjaan:v('pekerjaan'),setuju:true};
+  b.disabled=true; b.textContent='Mengirim…';
+  try{
+    const r=await fetch('/api/daftar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const j=await r.json().catch(()=>({})); if(!r.ok) throw new Error(j.error||'Gagal mendaftar. Coba lagi.');
+    $('box').innerHTML='<div class="ok"><div class="tick"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2>Pendaftaran berhasil</h2><p>'+esc(j.nama||'')+', data kamu sudah kami terima.</p><div class="id">'+esc(j.kode||'')+'</div><p>Simpan kode pendaftaran ini (screenshot saja). ID Kader dan kartu QR akan dibagikan panitia.</p></div>';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(x){ $('err').textContent=(x.name==='TypeError')?'Koneksi bermasalah. Periksa sinyal lalu coba lagi.':x.message; b.disabled=false; b.textContent='Daftar Sekarang'; }
+};
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+</script></body></html>

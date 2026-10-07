@@ -40,6 +40,17 @@ body.embed .wrap{margin-top:0}
 label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
 label .req{color:var(--danger)}
 .hint{font-size:12px;color:var(--muted);margin-top:5px}
+.hint.chk{color:var(--muted)}
+.hint.ok{color:var(--primary-2);font-weight:600}
+.hint.dup{color:var(--danger);font-weight:600}
+.hint.warn{color:#9A6B00}
+.nikwrap{position:relative}
+.nikwrap input{padding-right:48px}
+.nikicon{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none}
+.nikwrap[data-state=ok] input{border-color:var(--primary-2)}
+.nikwrap[data-state=dup] input{border-color:var(--danger)}
+.nikicon .spin{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 input,select,textarea{width:100%;font:inherit;font-size:15px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--field);color:var(--ink);transition:border-color .15s,box-shadow .15s;min-height:46px}
 input::placeholder,textarea::placeholder{color:#9AAAA0}
 input:focus,select:focus,textarea:focus{outline:0;border-color:var(--primary-2);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary-2) 22%,transparent)}
@@ -93,7 +104,7 @@ button.go:disabled{opacity:.6;cursor:wait;transform:none}
   <div class="grid">
     <div class="full sec"><span class="n">1</span>Data Diri</div>
 
-    <div class="full"><label>Foto <span class="req"style="font-weight:400;color:var(--muted)">*(Wajib memakai peci hitam dan kemeja putih, JPG/PNG maks 5 MB)</span></label>
+    <div class="full"><label>Foto <span style="font-weight:400;color:var(--muted)">(opsional, JPG/PNG maks 5 MB)</span></label>
       <div class="foto">
         <div class="ph" id="prev"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
         <div class="info"><input type="file" id="foto" accept="image/jpeg,image/png,image/webp"></div>
@@ -102,8 +113,8 @@ button.go:disabled{opacity:.6;cursor:wait;transform:none}
     <div class="full"><label for="nama">Nama lengkap <span class="req">*</span></label><input id="nama" autocomplete="name" placeholder="Sesuai KTP"></div>
 
     <div class="full"><label for="nik">NIK <span class="req">*</span></label>
-      <input id="nik" inputmode="numeric" maxlength="16" autocomplete="off" placeholder="16 digit Nomor Induk Kependudukan">
-      <div class="hint" id="nikHint">Hanya angka, 16 digit.</div></div>
+      <div class="nikwrap" id="nikWrap"><input id="nik" inputmode="numeric" maxlength="16" autocomplete="off" placeholder="16 digit Nomor Induk Kependudukan"><span class="nikicon" id="nikIcon" aria-hidden="true"></span></div>
+      <div class="hint" id="nikHint" aria-live="polite">Hanya angka, 16 digit.</div></div>
 
     <div><label for="jk">Jenis kelamin</label><input id="jk" value="Laki-laki" readonly></div>
     <div><label for="tempat">Tempat lahir <span class="req">*</span></label><input id="tempat" placeholder="mis. Bogor" autocomplete="off"></div>
@@ -140,8 +151,31 @@ button.go:disabled{opacity:.6;cursor:wait;transform:none}
 if(location.search.includes('embed=1')) document.body.classList.add('embed');
 const $=id=>document.getElementById(id); let fotoData=null;
 $('tgl').max=new Date().toISOString().slice(0,10);
+// Cek NIK langsung ke tabel pendaftaran begitu 16 digit selesai diketik
+const NIK_ICON={
+  ok:'<svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1FA45B"/><path d="M6.8 12.6l3.3 3.3 7-7.2" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  dup:'<svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#C0392B"/><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>',
+  chk:'<svg class="spin" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5E7266" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 1 1-9 9" /></svg>'
+};
+let nikState='', nikSeq=0;
+function setNik(state,msg){
+  nikState=state; $('nikWrap').dataset.state=state; $('nikIcon').innerHTML=NIK_ICON[state]||'';
+  $('nikHint').className='hint'+(state?' '+state:''); $('nikHint').textContent=msg;
+}
+async function cekNik(v){
+  const my=++nikSeq; setNik('chk','Memeriksa NIK…');
+  try{
+    const r=await fetch('/api/cek-nik',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nik:v})});
+    const j=await r.json().catch(()=>({}));
+    if(my!==nikSeq) return; // NIK sudah diubah saat menunggu: abaikan hasil lama
+    if(!r.ok||typeof j.ada!=='boolean') throw new Error('gagal');
+    if(j.ada) setNik('dup','NIK ini sudah terdaftar (duplikat). Satu NIK hanya bisa mendaftar satu kali.');
+    else setNik('ok','NIK belum terdaftar — bisa digunakan.');
+  }catch(x){ if(my===nikSeq) setNik('warn','NIK belum bisa dicek sekarang. Pengecekan tetap dilakukan saat kamu menekan Daftar.'); }
+}
 $('nik').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,16);
-  const n=e.target.value.length; $('nikHint').textContent=n?(n+'/16 digit'):'Hanya angka, 16 digit.';});
+  const v=e.target.value, n=v.length; nikSeq++;
+  if(n<16) setNik('',n?(n+'/16 digit'):'Hanya angka, 16 digit.'); else cekNik(v);});
 // Foto dikecilkan di HP/browser dulu (maks 900 px, JPEG) supaya cepat terkirim walau sinyal lemah
 function kompres(file){return new Promise((res,rej)=>{
   const img=new Image(), u=URL.createObjectURL(file);
@@ -166,6 +200,7 @@ $('kirim').onclick=async()=>{
   const v=k=>$(k).value.trim();
   if(!v('nama')) return bad('nama','Nama lengkap wajib diisi');
   if(!/^\d{16}$/.test(v('nik'))) return bad('nik','NIK harus 16 digit angka');
+  if(nikState==='dup') return bad('nik','NIK ini sudah terdaftar. Satu NIK hanya bisa mendaftar satu kali.');
   if(!v('tempat')) return bad('tempat','Tempat lahir wajib diisi');
   if(!v('tgl')) return bad('tgl','Tanggal lahir wajib dipilih');
   if(!v('pac')) return bad('pac','PAC / Utusan wajib diisi');
@@ -177,7 +212,7 @@ $('kirim').onclick=async()=>{
   b.disabled=true; b.textContent='Mengirim…';
   try{
     const r=await fetch('/api/daftar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    const j=await r.json().catch(()=>({})); if(!r.ok) throw new Error(j.error||'Gagal mendaftar. Coba lagi.');
+    const j=await r.json().catch(()=>({})); if(!r.ok){ if(r.status===409) setNik('dup','NIK ini sudah terdaftar (duplikat). Satu NIK hanya bisa mendaftar satu kali.'); throw new Error(j.error||'Gagal mendaftar. Coba lagi.'); }
     $('box').innerHTML='<div class="ok"><div class="tick"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2>Pendaftaran berhasil</h2><p>'+esc(j.nama||'')+', data kamu sudah kami terima.</p><div class="id">'+esc(j.kode||'')+'</div><p>Simpan kode pendaftaran ini (screenshot saja). ID Kader dan kartu QR akan dibagikan panitia.</p></div>';
     window.scrollTo({top:0,behavior:'smooth'});
   }catch(x){ $('err').textContent=(x.name==='TypeError')?'Koneksi bermasalah. Periksa sinyal lalu coba lagi.':x.message; b.disabled=false; b.textContent='Daftar Sekarang'; }
